@@ -17,6 +17,11 @@ class ServerStore
 		$this->config = $config;
 	}
 	
+	/**
+	 * 选择服务器
+	 * @param Server $server
+	 * @return \lib\server\ServerStore
+	 */
 	public function setServer(Server $server)
 	{
 		$this->server = $server;
@@ -29,22 +34,11 @@ class ServerStore
 		$this->setCallback('WorkerStart', 'onWorkerStart');
 		$this->setCallback('Connect', 'onConnect');
 		$this->setCallback('Receive', 'onReceive');
-		$this->sw->on('Receive', array($this, 'onReceive'));
 		$this->setCallback('Close', 'onClose');
 		$this->setCallback('Connect', 'onConnect');
 		
 		$this->sw->set($this->config);
 		$this->sw->start();
-	}
-	
-	public function onReceive($serv, $fd, $from_id, $data)
-	{
-		$response = $this->server->run($fd, $data);
-		if (!is_null($response))
-		{
-			$serv->send($fd, $response);
-			$serv->close($fd);
-		} 
 	}
 	
 	private function setCallback($name, $callback_method_name)

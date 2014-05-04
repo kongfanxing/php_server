@@ -6,10 +6,15 @@
  */
 
 namespace lib\server\servers;
-class RpcServer extends Server
+abstract class RpcServer extends Server
 {	
-	function process($request)
+	public function onReceive($serv, $fd, $from_id, $data)
 	{
-		
+		$response = $this->run($fd, $data);
+		if (!is_null($response))
+		{
+			$serv->send($fd, $response);
+			$serv->close($fd);
+		}
 	}
 }

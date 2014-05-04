@@ -10,7 +10,7 @@ namespace lib\main;
 class ProtocolConst 
 {
 	const HTTP = 'Http';
-	const TFRAME = 'TFrame';
+	const Binary = 'Binary';
 	
 	const STATUS_OK = 1;
 	const STATUS_WAIT = 0;

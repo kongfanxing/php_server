@@ -3,8 +3,6 @@ class MediaRetrieveProcesser extends \lib\server\servers\thrift\ServiceProcesser
 {
 	function execute()
 	{
-		$fsql = $this->service_args->rs->fsql;
-		
 		$ret = new \MediaRetrieveResult();
 		
 		$ret->retCode = 200;

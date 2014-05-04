@@ -16,7 +16,7 @@ $loader->register();
 
 class ThriftRpcServer extends RpcServer 
 {
-	protected $protocol_name = ProtocolConst::TFRAME;
+	protected $protocol_name = ProtocolConst::Binary;
 	private $service_name;
 	private $processer;
 	
