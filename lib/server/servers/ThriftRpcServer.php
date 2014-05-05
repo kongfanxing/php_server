@@ -26,7 +26,7 @@ class ThriftRpcServer extends RpcServer
 		$left = substr($request, 4, strlen($request) - 4);
 		$TMemoryBuffer->write($left);
 
-		$request = \lib\server\servers\thrift\ThriftServiceScheduler::
+		$request = \lib\server\servers\thrift\ThriftServiceProcessor::
 			init($TMemoryBuffer->getBuffer(), $this->service_name, $this->processer)->callService();
 		
 		return $request;

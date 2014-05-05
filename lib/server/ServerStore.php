@@ -30,6 +30,9 @@ class ServerStore
 	
 	public function run()
 	{
+		if (!$this->server instanceof Server)
+			throw new \Exception("there is no server setted!"); 
+		
 		$this->setCallback('start', 'onStart');
 		$this->setCallback('WorkerStart', 'onWorkerStart');
 		$this->setCallback('Connect', 'onConnect');

@@ -10,7 +10,7 @@ use \Thrift\Exception\TApplicationException;
 use \lib\server\servers\thrift\ThriftSerializer;
 use \Thrift\Transport\TMemoryBuffer;
 
-class ThriftServiceScheduler 
+class ThriftServiceProcessor 
 {
 	private $service;
 	private $mb;
@@ -36,26 +36,34 @@ class ThriftServiceScheduler
 	function callService()
 	{
 		$this->protocol = new \Thrift\Protocol\TBinaryProtocol($this->mb);
-		
+		$retValue = $this->getResult();
+		return $this->writeResult($retValue);
+	}
+	
+	private function getResult()
+	{
 		$service_args = $this->getServiceArgs();
 		$service_args->read($this->protocol);
-
+		
 		$this->protocol->readMessageEnd();
 		$processor = new $this->processer($service_args);
-		$retValue = $processor->execute($service_args);
-		
+		return $processor->execute($service_args);
+	}
+	
+	private function writeResult($retValue)
+	{
 		$service_result = $this->getServiceResult();
 		$service_result->success = $retValue;
 		
-		$swTrans = new \lib\server\servers\thrift\ThriftTransport();
-		$outTransport = new \Thrift\Transport\TFramedTransport($swTrans);
+		$thriftTransport = new \lib\server\servers\thrift\ThriftTransport();
+		$outTransport = new \Thrift\Transport\TFramedTransport($thriftTransport);
 		$pro = new \Thrift\Protocol\TBinaryProtocol($outTransport);
 		$pro->writeMessageBegin($this->name, \Thrift\Type\TMessageType::REPLY, $this->seqId);
 		$service_result->write($pro);
 		$pro->writeMessageEnd();
 		$pro->getTransport()->flush();
 		
-		return $swTrans->getBuffer()->getBuffer();
+		return $thriftTransport->getBuffer()->getBuffer();
 	}
 	
 	private function getServiceArgs()

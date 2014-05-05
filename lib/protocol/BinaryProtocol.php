@@ -8,6 +8,12 @@
 namespace lib\protocol;
 use lib\main\ProtocolConst;
 
+/**
+ * 
+ * 二进制协议，以frame的方式接受和发送数据
+ * 先读取前4个字节的header，得到content的长度，然后再读content
+ *
+ */
 class BinaryProtocol extends Protocol
 {
 	const FRAME_FINISH = 1;
@@ -57,7 +63,7 @@ class BinaryProtocol extends Protocol
 	function checkContent()
 	{
 		$this->header = substr($this->getBuffer(), 0, 4); 
-		$arr = unpack ( 'N', $this->header);
+		$arr = unpack ('N', $this->header);
 		$content_length = $arr[1];
 		if ($content_length > 0x7fffffff) $content_length = 0 - (($content_length - 1) ^ 0xffffffff);
 		

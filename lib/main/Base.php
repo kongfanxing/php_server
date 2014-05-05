@@ -36,7 +36,7 @@ class Base
 		else 
 		{
 			if (!empty(self::$user_autoload)) 
-				call_user_func(self::$user_autoload);
+				call_user_func(self::$user_autoload, $class);
 		}
 	}
 	

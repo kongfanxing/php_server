@@ -39,6 +39,16 @@ abstract class Server
 		return $response;
 	}
 	
+	public function onReceive($serv, $fd, $from_id, $data)
+	{
+		$response = $this->run($fd, $data);
+		if (!is_null($response))
+		{
+			$serv->send($fd, $response);
+			$serv->close($fd);
+		}
+	}
+	
 	private function getRequest(Protocol $protocol, $data)
 	{
 		return $protocol->getRequest($data);
