@@ -81,7 +81,6 @@ abstract class Server
 	{
 		echo "MasterPid={$serv->master_pid}|Manager_pid={$serv->manager_pid}\n";
 		echo "Server: start.Swoole version is [".SWOOLE_VERSION."]\n";
-	
 	}
 	
 	function onWorkerStart($serv, $worker_id)
@@ -113,9 +112,12 @@ abstract class Server
 	private function selectProtocol($fd)
 	{
 		$protocol = "\\lib\\protocol\\" . $this->protocol_name . 'Protocol';
-		if (isset(self::$protocol_pool[$protocol])) 
-			return self::$protocol_pool[$protocol];
-		
-		return self::$protocol_pool[$protocol] = new $protocol($fd);
+		if (isset(self::$protocol_pool[$this->protocol_name])) 
+		{
+			self::$protocol_pool[$this->protocol_name]->setFileDescript($fd);
+			return self::$protocol_pool[$this->protocol_name];
+		}
+			
+		return self::$protocol_pool[$this->protocol_name] = new $protocol($fd);
 	}
 }
