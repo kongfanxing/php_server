@@ -4,5 +4,5 @@ php_server
 依赖扩展swoole，安装方法见：https://github.com/matyhtf/swoole
 
 ==========
-目前基于TFrame协议的rpc server已经开发完毕
+目前的rpc server已经开发完毕
 http server尚在开发中
