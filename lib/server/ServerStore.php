@@ -1,19 +1,28 @@
 <?php
+/**
+ * 
+ * @author 孔繁兴(erickung)
+ *
+ */
+
 namespace lib\server;
 
 use lib\server\servers\Server;
 
+/**
+ * 
+ * Server工厂类
+ *
+ */
 class ServerStore
 {
-	static $sw_mode = SWOOLE_PROCESS;
-	
 	private $sw;
 	private $server;
 	private $config;
 	
 	public function __construct($host, $port, array $config)
 	{
-		$this->sw = new \swoole_server($host, $port, self::$sw_mode, SWOOLE_SOCK_TCP);
+		$this->sw = new \swoole_server($host, $port, SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
 		$this->config = $config;
 	}
 	

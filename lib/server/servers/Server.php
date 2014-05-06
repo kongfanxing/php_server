@@ -10,19 +10,47 @@ namespace lib\server\servers;
 use lib\protocol\Protocol;
 use lib\main\ProtocolConst;
 
+/**
+ * Server基类
+ *
+ */
 abstract class Server 
 {
+	/**
+	 * 协议名称
+	 * @var String
+	 */
 	protected $protocol_name = ProtocolConst::HTTP;
+	/**
+	 * 协议对象
+	 * @var Protocol
+	 */
 	private $protocol;
-	private static $protocol_pool;
+	
+	/**
+	 * 协议对象池
+	 * @var array
+	 */
+	private static $protocol_pool = array();
 	
 	public function __construct($protocol_name='')
 	{
 		if ($protocol_name) $this->protocol_name = $protocol_name;
 	}
 	
+	/**
+	 * Server业务处理
+	 * @param String $request
+	 */
 	abstract function process($request);
 	
+	/**
+	 * 对每次请求的执行、响应
+	 * @param int $fd
+	 * @param Sting $data
+	 * @return null|String
+	 * 
+	 */
 	public function run($fd, $data)
 	{
 		$this->protocol = $this->selectProtocol($fd);
@@ -49,6 +77,29 @@ abstract class Server
 		}
 	}
 	
+	function onStart($serv)
+	{
+		echo "MasterPid={$serv->master_pid}|Manager_pid={$serv->manager_pid}\n";
+		echo "Server: start.Swoole version is [".SWOOLE_VERSION."]\n";
+	
+	}
+	
+	function onWorkerStart($serv, $worker_id)
+	{
+		echo "WorkerStop[$worker_id]|pid=".posix_getpid().".\n";
+	}
+	
+	
+	function onClose($serv, $fd, $from_id)
+	{
+
+	}
+
+	function onConnect($serv, $fd, $from_id)
+	{
+
+	}
+	
 	private function getRequest(Protocol $protocol, $data)
 	{
 		return $protocol->getRequest($data);
@@ -66,28 +117,5 @@ abstract class Server
 			return self::$protocol_pool[$protocol];
 		
 		return self::$protocol_pool[$protocol] = new $protocol($fd);
-	}
-	
-	function onStart($serv)
-	{
-		echo "MasterPid={$serv->master_pid}|Manager_pid={$serv->manager_pid}\n";
-		echo "Server: start.Swoole version is [".SWOOLE_VERSION."]\n";
-	
-	} 
-	
-	function onWorkerStart($serv, $worker_id)
-	{
-		echo "WorkerStop[$worker_id]|pid=".posix_getpid().".\n";
-	}
-	
-	
-	function onClose($serv, $fd, $from_id)
-	{
-	
-	}
-	
-	function onConnect($serv, $fd, $from_id)
-	{
-	
 	}
 }

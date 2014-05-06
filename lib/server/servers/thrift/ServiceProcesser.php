@@ -7,6 +7,10 @@
 
 namespace lib\server\servers\thrift;
 
+/**
+ * 服务处理基类
+ *
+ */
 abstract class ServiceProcesser 
 {
 	public $service_args;

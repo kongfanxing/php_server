@@ -10,15 +10,53 @@ use \Thrift\Exception\TApplicationException;
 use \lib\server\servers\thrift\ThriftSerializer;
 use \Thrift\Transport\TMemoryBuffer;
 
-class ThriftServiceProcessor 
+/**
+ * 
+ * Service调度类
+ *
+ */
+class ServiceScheduler 
 {
+	/**
+	 * Service的名称
+	 * @var String
+	 */
 	private $service;
+	
+	/**
+	 * TMemoryBuffer对象
+	 * @var TMemoryBuffer
+	 */
 	private $mb;
+	
+	/**
+	 * TBinaryProtocol对象
+	 * @var TBinaryProtocol
+	 */
 	private $protocol;
+	
+	/**
+	 * Service处理器，需要具体服务自己封装
+	 * @see \lib\server\servers\thrift\ServiceProcesser
+	 * @var ServiceProcesser
+	 */
 	private $processer;
 	
+	/**
+	 * method的名称
+	 * @var String
+	 */
 	private $name;
+	/**
+	 * Trift的message的类型
+	 * @see \Thrift\Type\TMessageType
+	 * @var int
+	 */
 	private $type;
+	/**
+	 * 客户端请求的序列号
+	 * @var int
+	 */
 	private $seqId;
 	
 	function __construct(TMemoryBuffer $mb, $service, $processer)
@@ -28,11 +66,22 @@ class ThriftServiceProcessor
 		$this->processer = $processer;
 	}
 	
+	/**
+	 * 初始化调度类
+	 * @param TMemoryBuffer $mb
+	 * @param String $service
+	 * @param \lib\server\servers\thrift\ServiceProcesser $processer
+	 * @return \lib\server\servers\thrift\ServiceScheduler
+	 */
 	static function init(TMemoryBuffer $mb, $service, $processer)
 	{
 		return new self($mb, $service, $processer);
 	}
 	
+	/**
+	 * 调用Service
+	 * @return string
+	 */
 	function callService()
 	{
 		$this->protocol = new \Thrift\Protocol\TBinaryProtocol($this->mb);
@@ -40,6 +89,9 @@ class ThriftServiceProcessor
 		return $this->writeResult($retValue);
 	}
 	
+	/**
+	 * 获取服务的结果集
+	 */
 	private function getResult()
 	{
 		$service_args = $this->getServiceArgs();
@@ -50,6 +102,11 @@ class ThriftServiceProcessor
 		return $processor->execute($service_args);
 	}
 	
+	/**
+	 * 向buffer写入结果
+	 * @param  $retValue
+	 * @return string
+	 */
 	private function writeResult($retValue)
 	{
 		$service_result = $this->getServiceResult();

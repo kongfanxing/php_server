@@ -19,16 +19,14 @@ class BinaryProtocol extends Protocol
 	const FRAME_FINISH = 1;
 	const FRAME_UNFINISH = 0;
 	
-	//上次数据接收的状态
-	private $protocol_status = array();
-	//上次差的数据长度
-	private $length_lack = array();
-	
 	function __construct($fd)
 	{
 		parent::__construct($fd);
 	}
 	
+	/**
+	 * 初始化buffer
+	 */
 	function bufferInit()
 	{
 		if (!isset($this->buffer[$this->fd]))
@@ -36,11 +34,13 @@ class BinaryProtocol extends Protocol
 		
 		if (!isset($this->protocol_status[$this->fd]))
 			$this->protocol_status[$this->fd] = self::FRAME_FINISH;
-		
-		if (!isset($this->length_lack[$this->fd]))
-			$this->length_lack[$this->fd] = 0;
 	}
 	
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see \lib\protocol\Protocol::checkHeader()
+	 */
 	function checkHeader()
 	{
 		$this->bufferInit();
@@ -60,6 +60,10 @@ class BinaryProtocol extends Protocol
 		return true;	
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \lib\protocol\Protocol::checkContent()
+	 */
 	function checkContent()
 	{
 		$this->header = substr($this->getBuffer(), 0, 4); 
@@ -83,9 +87,9 @@ class BinaryProtocol extends Protocol
 		}
 		else 
 		{
-			$this->real_request = substr($this->getBuffer(), 0, $length_need);
-			$this->buffer[$this->fd] = substr($this->getBuffer(), $length_need);
-			$this->setFrameUnFinished();
+			$this->setFrameFinished();
+			$this->clearBuffer();
+			return ProtocolConst::STATUS_ERR;
 		}
 		
 		return true;
